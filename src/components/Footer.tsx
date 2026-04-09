@@ -3,69 +3,61 @@ export function Footer() {
     <footer className="py-16 px-6 lg:px-12 border-t border-border">
       <div className="max-w-7xl mx-auto">
         <div className="grid md:grid-cols-12 gap-12">
-          {/* Logo & Tagline */}
           <div className="md:col-span-4">
-            <p className="font-serif text-2xl tracking-wide text-foreground mb-4">Wabi</p>
+            <p className="font-serif text-2xl tracking-wide text-foreground mb-4">Агентство</p>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Японский минимализм в сочетании со скандинавским теплом.
+              Партнёрская программа для тех, кто умеет находить клиентов. 15% LTV, договор, стабильные выплаты.
             </p>
           </div>
 
-          {/* Navigation */}
           <div className="md:col-span-2 md:col-start-7">
             <p className="text-xs tracking-widest uppercase text-muted-foreground mb-4">Навигация</p>
             <nav className="flex flex-col gap-3">
               <a href="#philosophy" className="text-sm text-foreground hover:text-sage transition-colors">
-                Философия
+                О нас
               </a>
               <a href="#services" className="text-sm text-foreground hover:text-sage transition-colors">
-                Услуги
+                Условия
               </a>
               <a href="#process" className="text-sm text-foreground hover:text-sage transition-colors">
-                Процесс
+                Как работаем
               </a>
               <a href="#contact" className="text-sm text-foreground hover:text-sage transition-colors">
-                Контакты
+                Стать партнёром
               </a>
             </nav>
           </div>
 
-          {/* Social */}
           <div className="md:col-span-2">
-            <p className="text-xs tracking-widest uppercase text-muted-foreground mb-4">Соцсети</p>
+            <p className="text-xs tracking-widest uppercase text-muted-foreground mb-4">Контакты</p>
             <nav className="flex flex-col gap-3">
-              <a href="#" className="text-sm text-foreground hover:text-sage transition-colors">
-                Instagram
-              </a>
-              <a href="#" className="text-sm text-foreground hover:text-sage transition-colors">
-                Pinterest
-              </a>
               <a href="#" className="text-sm text-foreground hover:text-sage transition-colors">
                 Telegram
               </a>
+              <a href="mailto:partners@example.com" className="text-sm text-foreground hover:text-sage transition-colors">
+                Email
+              </a>
             </nav>
           </div>
 
-          {/* Legal */}
           <div className="md:col-span-2">
             <p className="text-xs tracking-widest uppercase text-muted-foreground mb-4">Документы</p>
             <nav className="flex flex-col gap-3">
               <a href="#" className="text-sm text-foreground hover:text-sage transition-colors">
-                Политика
+                Договор партнёра
               </a>
               <a href="#" className="text-sm text-foreground hover:text-sage transition-colors">
-                Условия
+                Политика
               </a>
             </nav>
           </div>
         </div>
 
-        {/* Bottom Bar */}
         <div className="mt-16 pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-xs text-muted-foreground">
-            &copy; {new Date().getFullYear()} Wabi Studio. Все права защищены.
+            &copy; {new Date().getFullYear()} Агентство. Все права защищены.
           </p>
-          <p className="text-xs text-muted-foreground">Создано с намерением</p>
+          <p className="text-xs text-muted-foreground">Платим честно и в срок</p>
         </div>
       </div>
     </footer>
