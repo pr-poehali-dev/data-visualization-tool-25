@@ -1,224 +1,243 @@
 import type React from "react"
 import { useEffect, useRef, useState } from "react"
 
-const qualificationItems = [
-  {
-    label: "Бюджет",
-    good: "от 300 тыс. руб./мес на рекламу или от 100 тыс. руб./мес на SEO",
-    bad: "«Нет бюджета, но хотим результат»",
-  },
-  {
-    label: "ЛПР",
-    good: "Вы общались с директором или маркетологом, у которого есть бюджет",
-    bad: "Контакт нашёл сам клиент — передал «порекомендовали»",
-  },
-  {
-    label: "Потребность",
-    good: "Чёткая задача: масштабировать трафик, выйти в новые регионы, улучшить позиции",
-    bad: "«Хочет Тильду продвинуть в ТОП-1 по e-commerce за 2 месяца»",
-  },
-  {
-    label: "Сроки",
-    good: "Готов начать в течение 1 месяца",
-    bad: "Участвует в тендере или рассматривает 3+ агентства одновременно",
-  },
-]
-
 export function Contact() {
-  const [isVisible, setIsVisible] = useState(false)
-  const [formState, setFormState] = useState({
-    name: "",
-    email: "",
-    message: "",
-  })
+  const [visible, setVisible] = useState(false)
+  const [modalOpen, setModalOpen] = useState(false)
+  const [form, setForm] = useState({ name: "", email: "", phone: "" })
+  const [sent, setSent] = useState(false)
   const sectionRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true)
-        }
-      },
-      { threshold: 0.1 },
-    )
-
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current)
-    }
-
+    const observer = new IntersectionObserver(([e]) => { if (e.isIntersecting) setVisible(true) }, { threshold: 0.1 })
+    if (sectionRef.current) observer.observe(sectionRef.current)
     return () => observer.disconnect()
   }, [])
 
+  useEffect(() => {
+    const handler = () => setModalOpen(true)
+    document.addEventListener("open-modal", handler)
+    return () => document.removeEventListener("open-modal", handler)
+  }, [])
+
+  useEffect(() => {
+    document.body.style.overflow = modalOpen ? "hidden" : ""
+    return () => { document.body.style.overflow = "" }
+  }, [modalOpen])
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    console.log(formState)
+    setSent(true)
+    setTimeout(() => { setModalOpen(false); setSent(false) }, 2500)
   }
+
+  const bantItems = [
+    { letter: "B", title: "Budget", desc: "от 100к ₽/мес на SEO или рекламу" },
+    { letter: "A", title: "Authority", desc: "Лицо, принимающее решения (ЛПР)" },
+    { letter: "N", title: "Need", desc: "Конкретная задача на рост" },
+    { letter: "T", title: "Timeline", desc: "Готов начать через 1–3 месяца" },
+  ]
+
+  const columns = [
+    {
+      color: "green",
+      title: "Подходят",
+      icon: "✓",
+      bg: "bg-green-50",
+      border: "border-green-200",
+      titleColor: "text-green-700",
+      iconBg: "bg-green-100",
+      iconColor: "text-green-600",
+      items: [
+        "SEO-продвижение коммерческих сайтов",
+        "Контекстная реклама (Яндекс, VK)",
+        "Лиды, квалифицированные по BANT",
+        "Бюджет от 100к+ ₽/мес",
+        "ЛПР есть, старт в 1–3 мес.",
+      ],
+    },
+    {
+      color: "red",
+      title: "Не берём",
+      icon: "✕",
+      bg: "bg-red-50",
+      border: "border-red-200",
+      titleColor: "text-red-700",
+      iconBg: "bg-red-100",
+      iconColor: "text-red-600",
+      items: [
+        "Участники тендеров",
+        "Рассматривают 3+ агентства",
+        "Регионы +4ч от Москвы (без оговорок)",
+        "Нет ЛПР или бюджет не подтверждён",
+        "Клиент уже работает с другим агентством",
+      ],
+    },
+    {
+      color: "gray",
+      title: "Мусор",
+      icon: "✗",
+      bg: "bg-gray-50",
+      border: "border-gray-200",
+      titleColor: "text-gray-600",
+      iconBg: "bg-gray-200",
+      iconColor: "text-gray-500",
+      items: [
+        "«Тильду в ТОП-1 за 2 месяца»",
+        "«Без бюджета, но нужен результат»",
+        "Нет сайта, нет продукта",
+        "«Хочу как у конкурента за 15к»",
+        "SEO для сайта-визитки без трафика",
+      ],
+    },
+  ]
 
   return (
     <>
-      {/* Qualification Block */}
-      <section className="py-32 lg:py-40 px-6 lg:px-12 bg-sand/20">
+      {/* Section 2: Leads qualification */}
+      <section ref={sectionRef} id="leads" className="py-24 px-4 lg:px-8 bg-white">
         <div className="max-w-7xl mx-auto">
-          <div className="max-w-xl mb-20">
-            <p
-              className={`text-xs tracking-[0.3em] uppercase text-terracotta mb-6 transition-all duration-1000 ${
-                isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-              }`}
-            >
-              Квалификация лидов
-            </p>
-            <h2 className="font-serif text-4xl md:text-5xl font-light text-foreground mb-6 text-balance">
-              Какие лиды
-              <span className="italic"> нам нужны</span>
+          {/* Header */}
+          <div className={`text-center mb-16 transition-all duration-700 ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}>
+            <span className="inline-block text-blue-600 text-sm font-semibold tracking-widest uppercase bg-blue-50 px-4 py-1.5 rounded-full mb-4">
+              Квалификация
+            </span>
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-900 mb-4">
+              Какие лиды нам передавать,<br className="hidden md:block" /> а какие — нет
             </h2>
-            <p className="text-muted-foreground leading-relaxed">
-              Хороший лид = быстрая сделка = ваши деньги. Проверьте клиента по четырём критериям перед передачей.
+            <p className="text-gray-500 text-lg max-w-xl mx-auto">
+              Хороший лид = быстрая сделка = ваше вознаграждение уже через 10 дней
             </p>
           </div>
 
-          <div className="space-y-px bg-border">
-            {qualificationItems.map((item) => (
-              <div key={item.label} className="bg-background grid md:grid-cols-12 gap-0">
-                <div className="md:col-span-2 p-8 border-r border-border flex items-center">
-                  <p className="font-serif text-2xl text-sage">{item.label}</p>
+          {/* BANT checklist */}
+          <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-14 transition-all duration-700 delay-100 ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}>
+            {bantItems.map((item) => (
+              <div key={item.letter} className="flex items-start gap-4 p-5 bg-blue-50 rounded-2xl border border-blue-100 hover:border-blue-300 transition-colors">
+                <div className="w-10 h-10 rounded-xl bg-blue-600 text-white font-black text-base flex items-center justify-center shrink-0">
+                  {item.letter}
                 </div>
-                <div className="md:col-span-5 p-8 border-r border-border">
-                  <p className="text-xs tracking-widest uppercase text-sage mb-2">Хороший лид</p>
-                  <p className="text-muted-foreground leading-relaxed">{item.good}</p>
-                </div>
-                <div className="md:col-span-5 p-8">
-                  <p className="text-xs tracking-widest uppercase text-terracotta mb-2">Не передавайте</p>
-                  <p className="text-muted-foreground leading-relaxed">{item.bad}</p>
+                <div>
+                  <p className="font-bold text-gray-900 text-sm">{item.title}</p>
+                  <p className="text-gray-500 text-sm mt-0.5">{item.desc}</p>
                 </div>
               </div>
             ))}
           </div>
 
-          <div className="mt-12 p-8 border border-border">
-            <p className="text-xs tracking-widest uppercase text-muted-foreground mb-3">Важно</p>
-            <p className="text-muted-foreground leading-relaxed">
-              Мы не работаем с тендерами, не рассматриваем лиды из регионов с разницей от Москвы +4 часа и более,
-              а также не берём проекты без бюджета или с нереалистичными ожиданиями по срокам.
-              Если сомневаетесь — лучше спросите у нас заранее.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Contact Form */}
-      <section ref={sectionRef} id="contact" className="py-32 lg:py-40 px-6 lg:px-12">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-16 lg:gap-24">
-            <div>
-              <p
-                className={`text-xs tracking-[0.3em] uppercase text-terracotta mb-6 transition-all duration-1000 ${
-                  isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-                }`}
-              >
-                Начать партнёрство
-              </p>
-              <h2
-                className={`font-serif text-4xl md:text-5xl lg:text-6xl font-light text-foreground mb-8 text-balance transition-all duration-1000 delay-200 ${
-                  isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-                }`}
-              >
-                Давайте
-                <br />
-                поговорим
-              </h2>
-              <p
-                className={`text-muted-foreground leading-relaxed mb-12 max-w-md transition-all duration-1000 delay-300 ${
-                  isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-                }`}
-              >
-                Изучите материалы, напишите нам — созвонимся, ответим на вопросы и заключим договор.
-                Обычно от первого контакта до подписания уходит 2–3 дня.
-              </p>
-
-              <div
-                className={`space-y-6 transition-all duration-1000 delay-400 ${
-                  isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-                }`}
-              >
-                <div>
-                  <p className="text-xs tracking-widest uppercase text-muted-foreground mb-2">Пример дохода</p>
-                  <p className="text-foreground">1 клиент на рекламу 600 тыс./мес = <strong>90 тыс. руб./мес</strong> вам</p>
+          {/* 3 columns */}
+          <div className={`grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 transition-all duration-700 delay-200 ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}>
+            {columns.map((col) => (
+              <div key={col.title} className={`rounded-2xl border-2 ${col.border} ${col.bg} p-6`}>
+                <div className="flex items-center gap-3 mb-5">
+                  <div className={`w-8 h-8 rounded-lg ${col.iconBg} ${col.iconColor} font-bold text-base flex items-center justify-center`}>
+                    {col.icon}
+                  </div>
+                  <h3 className={`font-bold text-lg ${col.titleColor}`}>{col.title}</h3>
                 </div>
-                <div>
-                  <p className="text-xs tracking-widest uppercase text-muted-foreground mb-2">Ещё пример</p>
-                  <p className="text-foreground">2 SEO-клиента по 150 тыс./мес = <strong>45 тыс. руб./мес</strong> — окупает ваш маркетинг</p>
-                </div>
+                <ul className="space-y-2.5">
+                  {col.items.map((item) => (
+                    <li key={item} className="flex items-start gap-2 text-sm text-gray-700">
+                      <span className={`mt-0.5 ${col.iconColor} font-bold`}>{col.icon}</span>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
               </div>
-            </div>
+            ))}
+          </div>
 
-            <div
-              className={`transition-all duration-1000 delay-500 ${
-                isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-              }`}
+          {/* CTA */}
+          <div className={`text-center transition-all duration-700 delay-300 ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}>
+            <button
+              onClick={() => document.dispatchEvent(new CustomEvent("open-modal"))}
+              className="inline-flex items-center gap-3 px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold text-base rounded-xl shadow-md hover:shadow-lg transition-all duration-300"
             >
-              <form onSubmit={handleSubmit} className="space-y-8">
-                <div>
-                  <label htmlFor="name" className="block text-xs tracking-widest uppercase text-muted-foreground mb-3">
-                    Имя
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
-                    value={formState.name}
-                    onChange={(e) => setFormState({ ...formState, name: e.target.value })}
-                    className="w-full bg-transparent border-b border-border py-3 text-foreground placeholder:text-muted-foreground/50 focus:border-sage focus:outline-none transition-colors"
-                    placeholder="Ваше имя"
-                    required
-                  />
-                </div>
-                <div>
-                  <label htmlFor="email" className="block text-xs tracking-widest uppercase text-muted-foreground mb-3">
-                    Почта
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    value={formState.email}
-                    onChange={(e) => setFormState({ ...formState, email: e.target.value })}
-                    className="w-full bg-transparent border-b border-border py-3 text-foreground placeholder:text-muted-foreground/50 focus:border-sage focus:outline-none transition-colors"
-                    placeholder="ваш@email.com"
-                    required
-                  />
-                </div>
-                <div>
-                  <label htmlFor="message" className="block text-xs tracking-widest uppercase text-muted-foreground mb-3">
-                    Расскажите о себе
-                  </label>
-                  <textarea
-                    id="message"
-                    value={formState.message}
-                    onChange={(e) => setFormState({ ...formState, message: e.target.value })}
-                    rows={4}
-                    className="w-full bg-transparent border-b border-border py-3 text-foreground placeholder:text-muted-foreground/50 focus:border-sage focus:outline-none transition-colors resize-none"
-                    placeholder="Чем занимаетесь, какая аудитория, есть ли уже лиды..."
-                    required
-                  />
-                </div>
-                <button
-                  type="submit"
-                  className="group inline-flex items-center gap-3 px-8 py-4 bg-sage text-primary-foreground text-sm tracking-widest uppercase hover:bg-sage/90 transition-all duration-500"
-                >
-                  Стать партнёром
-                  <svg
-                    className="w-4 h-4 transition-transform duration-500 group-hover:translate-x-1"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                  </svg>
-                </button>
-              </form>
-            </div>
+              Задать вопрос
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+              </svg>
+            </button>
           </div>
         </div>
       </section>
+
+      {/* Modal */}
+      {modalOpen && (
+        <div
+          className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center px-4"
+          onClick={(e) => { if (e.target === e.currentTarget) setModalOpen(false) }}
+        >
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8 relative">
+            <button
+              onClick={() => setModalOpen(false)}
+              className="absolute top-4 right-4 w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500 flex items-center justify-center transition-colors"
+            >
+              ✕
+            </button>
+
+            {sent ? (
+              <div className="text-center py-8">
+                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">Заявка отправлена!</h3>
+                <p className="text-gray-500 text-sm">Свяжемся с вами в течение одного рабочего дня</p>
+              </div>
+            ) : (
+              <>
+                <div className="mb-6">
+                  <h3 className="text-2xl font-extrabold text-gray-900 mb-1">Стать партнёром</h3>
+                  <p className="text-gray-500 text-sm">Расскажите о себе — свяжемся и ответим на вопросы</p>
+                </div>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Имя</label>
+                    <input
+                      type="text"
+                      required
+                      value={form.name}
+                      onChange={(e) => setForm({ ...form, name: e.target.value })}
+                      className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:outline-none text-gray-900 text-sm transition-colors"
+                      placeholder="Иван Петров"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Email</label>
+                    <input
+                      type="email"
+                      required
+                      value={form.email}
+                      onChange={(e) => setForm({ ...form, email: e.target.value })}
+                      className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:outline-none text-gray-900 text-sm transition-colors"
+                      placeholder="ivan@company.ru"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Телефон</label>
+                    <input
+                      type="tel"
+                      required
+                      value={form.phone}
+                      onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                      className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:outline-none text-gray-900 text-sm transition-colors"
+                      placeholder="+7 (999) 000-00-00"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    className="w-full py-4 bg-orange-500 hover:bg-orange-600 text-white font-bold text-base rounded-xl transition-colors mt-2"
+                  >
+                    Отправить заявку
+                  </button>
+                </form>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </>
   )
 }
